@@ -1,0 +1,13 @@
+image: gcc
+before_script:
+  - apt-get update --yes
+  - apt-get install --yes cmake
+
+build:
+  script:
+    - cd ./build; cmake -DDEBUG=ON -DGUI=OFF -DTEST=ON ..; make -j2; cd ..
+    - cd ./debug/bin/
+    - /bin/bash testinterface.sh
+  only:
+    - master
+    - web

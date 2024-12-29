@@ -1,0 +1,10 @@
+[Desktop Entry]
+Exec=/usr/bin/nyuv
+Icon=/usr/lib/nyuv/nyuv.png
+Type=Application
+Terminal=false
+Name=nyuv
+GenericName=nyuv
+Categories=nyuv
+Name[en_US]=nyuv
+GenericName[en_US.UTF-8]=nyuv

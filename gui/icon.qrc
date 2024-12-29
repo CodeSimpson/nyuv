@@ -1,0 +1,39 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>statics/add.png</file>
+    <file>statics/clear.png</file>
+    <file>statics/close.png</file>
+    <file>statics/help.png</file>
+    <file>statics/large.png</file>
+    <file>statics/left.png</file>
+    <file>statics/nyuv.png</file>
+    <file>statics/mesage.png</file>
+    <file>statics/open.png</file>
+    <file>statics/quit.png</file>
+    <file>statics/right.png</file>
+    <file>statics/save.png</file>
+    <file>statics/select.png</file>
+    <file>statics/small.png</file>
+    <file>statics/stop.png</file>
+    <file>statics/toLeft.png</file>
+    <file>statics/toRight.png</file>
+    <file>statics/reset.png</file>
+    <file>statics/update.png</file>
+    <file>statics/folder.png</file>
+    <file>statics/image.png</file>
+    <file>statics/rawImg.png</file>
+    <file>statics/addTo.png</file>
+    <file>statics/exchange.png</file>
+    <file>statics/prefer.png</file>
+    <file>statics/flip.png</file>
+    <file>statics/hwchange.png</file>
+    <file>statics/lock.png</file>
+    <file>statics/unlock.png</file>
+    <file>statics/previous.png</file>
+    <file>statics/gopath.png</file>
+    <file>statics/upath.png</file>
+    <file>statics/enterpath.png</file>
+    <file>statics/fclose.png</file>
+    <file>statics/fopen.png</file>
+</qresource>
+</RCC>

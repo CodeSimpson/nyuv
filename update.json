@@ -1,0 +1,9 @@
+{
+"nyuv":
+    {
+        "LatestVerison":"V0.9.8",
+        "Url":"https://git.n.xiaomi.com/caibingcheng/nyuv/-/releases",
+        "UpdateTime":"2021-06-22",
+        "ReleaseNote":"\n1.修复mipi解析的问题;\n2.添加对RGB8的支持;\n3.增强目录树的样式和功能;\n4.修改更新策略;"
+    }
+}
