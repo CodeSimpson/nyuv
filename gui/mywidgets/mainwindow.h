@@ -16,7 +16,7 @@
 #include "myInfoBarQFrame.h"
 #include "update.h"
 #include "myQLabel.h"
-
+/************* 主窗口类 **************/
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -69,24 +69,27 @@ public:
     }
 
 private:
-    QMenuBar *mp_bar_menu;
-    QToolBar *mp_bar_tool;
-    QToolBar *mp_bar_left;
-    myInfoBarQFrame *mp_frame_left;
-    QSplitter *mp_splitter_left;
-    QToolBar *mp_bar_right;
-    QWidget *mp_widget_central;
-    QTabBar *mp_widget_tab;
-    QStatusBar *mp_bar_status;
-    QLabel *mp_label_image;
-    LocalFileSystemViewer *m_filetree;
-    ImageInformationBar *m_setting;
+    QMenuBar *mp_bar_menu;                              // 菜单栏组件，需添加QAction类
+    QToolBar *mp_bar_tool;                              // 工具栏组件，需添加QAction类
+    QToolBar *mp_bar_left;                              // 左工具栏组件
+    myInfoBarQFrame *mp_frame_left;                     // QFrame字类，框架组件，定义框架样式，【未使用】
+    QSplitter *mp_splitter_left;                        // 左分割器组件，可以调整子窗口的大小，这里指文件栏和中心图像显示栏
+    QToolBar *mp_bar_right;                             // 右工具栏
+    QWidget *mp_widget_central;                         // 中心组件
+    QTabBar *mp_widget_tab;                             // 选项卡栏，同时查看多张图片时使用
+    QStatusBar *mp_bar_status;                          // 状态栏
+    QLabel *mp_label_image;                             // 标签组件，用于显示图片
+    LocalFileSystemViewer *m_filetree;                  // QTreeView子类，这里用来显示文件目录结构
+    ImageInformationBar *m_setting;                     // 设置图片格式信息类
 
     /* new class */
     QImageViewer *m_imageviewer;
     QImageViewer *m_tmpviewer;
     QList<QImageViewer *> m_imageviewer_list;
 
+    /*
+     * 功能：实例化主窗口中各组件对象
+    */
     void initMainWindow(void);
     void initUiComponent(void);
     void setQImageViewerWidget(void);

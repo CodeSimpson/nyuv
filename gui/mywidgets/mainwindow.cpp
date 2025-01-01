@@ -608,9 +608,6 @@ void MainWindow::setWindowComponet(void)
     connect(mp_widget_tab, SIGNAL(tabMoved(int, int)), this, SLOT(tabMoveAction(int, int)));
     connect(exitAction, SIGNAL(triggered(bool)), this, SLOT(close()));
 
-    m_setting = new ImageInformationBar(m_rawset, this);
-    m_filetree = new LocalFileSystemViewer(m_home, this);
-
     connect(m_filetree, SIGNAL(fileItemDoubleClicked(const QString &)), this, SLOT(fileTreeTriggered(const QString &)));
     connect(m_setting, SIGNAL(processBtnClicked(const IMAGEINFO &)), this, SLOT(settingTriggered(const IMAGEINFO &)));
 
@@ -700,17 +697,17 @@ void MainWindow::dropEvent(QDropEvent *e)
 
 void MainWindow::initMainWindow(void)
 {
-    setAcceptDrops(true);
+    setAcceptDrops(true);                                           // 设置当前QWidget对象是否接受拖放事件
     mp_update = new Update(this);
     // mp_update->check();
 
-    mp_bar_menu = new QMenuBar(this);
+    mp_bar_menu = new QMenuBar(this);                               // 构造子对象实例mp_bar_menu，传入父对象指针，管理子对象生命周期
     mp_bar_menu->setAcceptDrops(false);
-    setMenuBar(mp_bar_menu);
+    setMenuBar(mp_bar_menu);                                        // 将菜单栏mp_bar_menu设置为当前主窗口的菜单栏，没有则当前主窗口不显示菜单栏
 
     mp_bar_tool = new QToolBar(this);
     mp_bar_tool->setAcceptDrops(false);
-    addToolBar(mp_bar_tool);
+    addToolBar(mp_bar_tool);                                        // 将工具栏mp_bar_tool添加到主窗口中，默认在窗口上部，没有则当前主窗口不显示该工具栏mp_bar_tool
 
     mp_bar_left = new QToolBar(this);
     mp_bar_left->setAcceptDrops(false);
@@ -727,14 +724,17 @@ void MainWindow::initMainWindow(void)
     mp_bar_status = new QStatusBar(this);
     setStatusBar(mp_bar_status);
 
-    mp_bar_left->setStyleSheet("QToolBar {border: 1px solid gray;}");
+    mp_bar_left->setStyleSheet("QToolBar {border: 1px solid gray;}");       // 设置QToolBar的样式表，边框设置为灰色，宽度为 1 像素，并且边框样式为实线。
     mp_bar_right->setStyleSheet("QToolBar {border: 1px solid gray;}");
-    mp_bar_status->setStyleSheet("QStatusBar {border: 1px solid gray;}");
+    mp_bar_status->setStyleSheet("QStatusBar {border: 1px solid gray;}");   // 字符串中的 "QStatusBar" 需要和当前类对应，样式表的用法参考：https://doc.qt.io/archives/qt-5.9/stylesheet.html
 
     mp_splitter_left = new QSplitter(Qt::Horizontal, this);
     mp_splitter_left->addWidget(mp_bar_left);
-    mp_splitter_left->addWidget(mp_widget_central);
+    mp_splitter_left->addWidget(mp_widget_central);                         // 这里将中心组件和左工具栏都加入分割器中，可以调整俩个窗口的大小
     mp_splitter_left->setStretchFactor(0, 1);
     mp_splitter_left->setStretchFactor(1, 9);
-    setCentralWidget(mp_splitter_left);
+    setCentralWidget(mp_splitter_left);                                     // 设置主窗口的中央部件为mp_splitter_left
+
+    m_setting = new ImageInformationBar(m_rawset, this);
+    m_filetree = new LocalFileSystemViewer(m_home, this);
 }

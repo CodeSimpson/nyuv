@@ -13,7 +13,9 @@
 
 #include "defines.h"
 #include "stats.h"
-
+/*
+ * 保存image buffer和image格式信息，同时支持基础的图片编辑操作
+*/
 class QImageViewer : public QWidget
 {
     Q_OBJECT
