@@ -13,6 +13,7 @@
 #include "mainwindow.h"
 #include "myQLabel.h"
 
+/************* 提供窗口组件的滚动视图 **************/
 class myQScrollArea : public QScrollArea
 {
 public:

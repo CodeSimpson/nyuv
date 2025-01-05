@@ -92,7 +92,13 @@ private:
     */
     void initMainWindow(void);
     void initUiComponent(void);
+    /*
+     * 功能：设置中心组件和标签组件的格式
+    */
     void setQImageViewerWidget(void);
+    /*
+     * 功能：实例化QAction，连接对应的槽函数，配置各菜单栏和工具栏
+    */
     void setWindowComponet(void);
     void initImageResource(void);
     void loadImageResource(const bool &isauto = true);

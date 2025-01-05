@@ -409,24 +409,24 @@ void MainWindow::setQImageViewerWidget(void)
     /* label show image */
     mp_label_image = new myQLabel(this);
     myQScrollArea *imageScrollArea = new myQScrollArea(this);
-    imageScrollArea->setAlignment(Qt::AlignCenter);
+    imageScrollArea->setAlignment(Qt::AlignCenter);                 // 设置中心对齐，默认为左上角对齐
     imageScrollArea->setFrameShape(QFrame::NoFrame);
     imageScrollArea->setWidget(mp_label_image);
 
     QGridLayout *mainLayout = new QGridLayout();
-    mainLayout->setSpacing(1);
-    mainLayout->setMargin(2);
-    mainLayout->addWidget(mp_widget_tab, 0, 0);
+    mainLayout->setSpacing(1);                                      // 设置布局中控件之间的间距
+    mainLayout->setMargin(2);                                       // 设置布局边缘与父控件之间的间距
+    mainLayout->addWidget(mp_widget_tab, 0, 0);                     // QGridLayout::addWidget()并不会发生所有权的转移。
     mainLayout->addWidget(imageScrollArea, 1, 0);
-    mp_widget_central->setLayout(mainLayout);
+    mp_widget_central->setLayout(mainLayout);                       // QWidget::setLayout()会转移所有权，一个QWidget组件只能拥有一个布局管理器，如果mp_widget_central已经安装了一个布局管理器，则不被允许安装另一个
 
     mp_widget_tab->setTabsClosable(true);
     mp_widget_tab->setAutoHide(true);
     mp_widget_tab->setMovable(true);
     mp_widget_tab->setChangeCurrentOnDrag(false);
     mp_widget_tab->setIconSize(QSize(32, 24));
-    mp_widget_tab->setElideMode(Qt::ElideLeft);
-    mp_widget_tab->setShape(QTabBar::RoundedNorth);
+    mp_widget_tab->setElideMode(Qt::ElideLeft);                     // 如何隐藏标签栏的文本
+    mp_widget_tab->setShape(QTabBar::RoundedNorth);                 // 设置标签栏的形状
 }
 
 RESULT MainWindow::loadRawSet()
@@ -530,7 +530,7 @@ void MainWindow::setWindowComponet(void)
     mp_action_prefer->setStatusTip(tr("偏好"));
     mp_action_prefer->setIcon(QIcon(":/statics/prefer.png"));
 
-    QMenu *fileMenu = mp_bar_menu->addMenu(tr("文件"));
+    QMenu *fileMenu = mp_bar_menu->addMenu(tr("文件"));                         // 将带有标题的新QMenu附加到菜单栏，菜单栏将拥有该菜单的所有权，返回新菜单
     fileMenu->addAction(mp_action_open);
     fileMenu->addAction(mp_action_folder);
     fileMenu->addAction(mp_action_save);
@@ -611,13 +611,13 @@ void MainWindow::setWindowComponet(void)
     connect(m_filetree, SIGNAL(fileItemDoubleClicked(const QString &)), this, SLOT(fileTreeTriggered(const QString &)));
     connect(m_setting, SIGNAL(processBtnClicked(const IMAGEINFO &)), this, SLOT(settingTriggered(const IMAGEINFO &)));
 
-    m_filetree->setCursor(QCursor(Qt::PointingHandCursor));
+    m_filetree->setCursor(QCursor(Qt::PointingHandCursor));             // 设置文件树组件的光标形状，这里设置为手型
     m_filetree->setMouseTracking(true);
 
     QGridLayout *layout_left = new QGridLayout();
-    layout_left->addWidget(m_filetree->initPathBox(), 0, 0, 1, 1);
+    layout_left->addWidget(m_filetree->initPathBox(), 0, 0, 1, 1);      // initPathBox返回框架组件，就是文件目录上面那部分
     layout_left->addWidget(m_filetree, 1, 0, 1, 1);
-    mp_bar_left->addWidget(new myInfoBarQFrame(layout_left, this));
+    mp_bar_left->addWidget(new myInfoBarQFrame(layout_left, this));     // 左工具栏添加文件目录框架，包含文件目录栏和文件目录编辑栏
     mp_bar_right->addWidget(m_setting);
     mp_bar_right->setFixedWidth(180);
 }
