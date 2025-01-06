@@ -83,21 +83,24 @@ void MainWindow::loadImageResource(const bool &isauto)
         }
         settingTriggered(m_setting->value());
     }
-    m_setting->updateFit();
-    mp_label_image->setPixmap(m_imageviewer->pixmap);
-    mp_label_image->resize(m_imageviewer->size);
-    QString filename_title = QFileInfo(m_imageviewer->filename).fileName();
-    if (filename_title.isEmpty())
-    {
-        filename_title = tr("nyuv");
-    }
     else
     {
-        filename_title += tr(" - nyuv");
+        m_setting->updateFit();
+        mp_label_image->setPixmap(m_imageviewer->pixmap);
+        mp_label_image->resize(m_imageviewer->size);
+        QString filename_title = QFileInfo(m_imageviewer->filename).fileName();
+        if (filename_title.isEmpty())
+        {
+            filename_title = tr("nyuv");
+        }
+        else
+        {
+            filename_title += tr(" - nyuv");
+        }
+        setWindowTitle(filename_title);
+        mp_widget_tab->setTabText(mp_widget_tab->currentIndex(), lessStr(m_imageviewer->filename, 20));
+        mp_widget_tab->setTabIcon(mp_widget_tab->currentIndex(), QIcon(m_imageviewer->pixmap));
     }
-    setWindowTitle(filename_title);
-    mp_widget_tab->setTabText(mp_widget_tab->currentIndex(), lessStr(m_imageviewer->filename, 20));
-    mp_widget_tab->setTabIcon(mp_widget_tab->currentIndex(), QIcon(m_imageviewer->pixmap));
 }
 
 int MainWindow::getAL()

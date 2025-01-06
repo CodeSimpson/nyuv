@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 
     if (file_info.exists())
     {
-        mainWindow.setHome(file_info.absolutePath());
+        mainWindow.setHome(file_info.absolutePath());                               // QFileInfo::absolutePath() 返回文件的绝对路径，不包含文件名
     }
     if (file_info.isFile())
     {

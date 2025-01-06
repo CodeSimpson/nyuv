@@ -347,7 +347,6 @@ RESULT QImageViewer::loadImageResource(void)
         return RESULT::FAILED;
     }
 
-    /* get file list */
     getFileInfoList();
 
     /* load file info */
@@ -596,30 +595,20 @@ RESULT QImageViewer::setAngleAndScale(const int &angle, const int &sizeScale)
 
 int QImageViewer::getFileInfoList(void)
 {
-    QFileInfo info;
-    QFileInfoList infoList;
-
-    path = QFileInfo(filename).absolutePath();
-    dir = QFileInfo(filename).absoluteDir();
+    path = QFileInfo(filename).absolutePath();                          // 返回文件的绝对路径，不包含文件名
+    dir = QFileInfo(filename).absoluteDir();                            // 返回filename的QDir对象，用于该路径下的文件操作和管理
 
     /* clear list */
     fileInfoList.clear();
 
-    QStringList file_filter;
+    QStringList file_filter;                                            // 保存需要过滤出的不同图片文件格式，eg: *.*rgb* *.*raw* *.*yuv* ...
     vector<string> filter = autocomplete_load(CONFIG_TYPE::FILTER);
     for (auto f : filter)
     {
         file_filter.append(QString::fromStdString(f));
     }
     // qDebug() << file_filter;
-    infoList = dir.entryInfoList(file_filter, QDir::Files);
-
-    for (int i = 0; i < infoList.count(); i++)
-    {
-        info = infoList.at(i);
-        fileInfoList.append(info);
-    }
-
+    fileInfoList = dir.entryInfoList(file_filter, QDir::Files);         // 返回符合过滤条件的一组文件
     return 0;
 }
 
