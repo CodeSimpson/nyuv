@@ -64,7 +64,7 @@ LocalFileSystemViewer::LocalFileSystemViewer(const QString &rootPath, QWidget *p
                                "QTreeView::item:hover{background:rgb(200, 200, 200);color:rgb(255, 255, 255)}"
                                "QTreeView::item:selected{background:rgb(150, 150, 150);}";
     setStyleSheet(style);
-    header()->hide();
+    header()->hide();               // 隐藏树视图的标题
 
     // init file system model
     m_fs = new QFileSystemModel(this);
@@ -76,9 +76,9 @@ LocalFileSystemViewer::LocalFileSystemViewer(const QString &rootPath, QWidget *p
     {
         file_filter.append(QString::fromStdString(f));
     }
-    m_fs->setNameFilterDisables(false);
+    m_fs->setNameFilterDisables(false);                     // 设置未通过名称过滤器的文件是否被过滤或隐藏
     m_fs->setNameFilters(file_filter);
-    m_fs->setIconProvider(new myQFileIconProvider(this));
+    m_fs->setIconProvider(new myQFileIconProvider(this));   // 为目录模型设置文件图标的提供程序。
 
     // init tree view data
     setModel(m_fs);
@@ -197,7 +197,7 @@ void LocalFileSystemViewer::onUpClicked()
     if (m_dirs.isEmpty())
         return;
     auto dir = QDir(m_dirs.top());
-    bool cdup = dir.cdUp();
+    bool cdup = dir.cdUp();                         // QDir::cdUp()：通过从 QDir 的当前目录向上移动一个目录来更改目录。
     if (!cdup)
         return;
     changeRootPath(dir.path());
@@ -225,12 +225,13 @@ void LocalFileSystemViewer::onPathEdited(const QString &rootPath)
         return;
     }
     QDir dir = QDir(rootPath);
-    QDir dir_dir = QDir(QFileInfo(rootPath).absolutePath());
-    QStringList candidates = dir_dir.entryList(QDir::AllDirs | QDir::NoSymLinks | QDir::NoDotAndDotDot);
+    QDir dir_dir = QDir(QFileInfo(rootPath).absolutePath());        // 绝对路径，不包含文件名
+    QStringList candidates = dir_dir.entryList(QDir::AllDirs | QDir::NoSymLinks | QDir::NoDotAndDotDot);    // 获取指定目录下的所有文件夹的名称，不包含文件名，QDir::AllDirs表示获取所有子目录，QDir::NoSymLinks表示不获取符号链接，
+                                                                                                            // QDir::NoDotAndDotDot表示不获取"."和".."这两个特殊目录。
     QStringList placeholders;
     for (QString &s : candidates)
     {
-        int index = s.indexOf(dir.dirName());
+        int index = s.indexOf(dir.dirName());                       // QDir::dirName()：返回路径中的最后一个目录名称或文件名
         if (index == 0)
         {
             placeholders.push_back(s);
@@ -241,7 +242,7 @@ void LocalFileSystemViewer::onPathEdited(const QString &rootPath)
         int s = m_pathname->text().size();
         m_pathname->setText(dir_dir.path() + "/" + placeholders[0]);
         int e = m_pathname->text().size();
-        m_pathname->setSelection(s, e);
+        m_pathname->setSelection(s, e);                             // 从位置s选择文本，长度为e，选中后干啥？？？
     }
     m_path_lenght_last = m_pathname->text().size();
     // setSelection
@@ -252,11 +253,11 @@ void LocalFileSystemViewer::onClicked(const QModelIndex &index)
         return;
     if (isExpanded(index))
     {
-        collapse(index);
+        collapse(index);                    // 折叠项目
     }
     else
     {
-        expand(index);
+        expand(index);                      // 展开项目
     }
 }
 void LocalFileSystemViewer::onClicked(const bool &triggered)
@@ -279,7 +280,7 @@ void LocalFileSystemViewer::onDoubleClicked(const QModelIndex &index)
     }
     else
     {
-        emit fileItemDoubleClicked(clicked_path);
+        emit fileItemDoubleClicked(clicked_path);                       // 文件树视图中触发signal，主窗口MainWindow也能接收到
     }
 }
 
@@ -329,7 +330,7 @@ void LocalFileSystemViewer::changeRootPath(const QString &rootPath)
     if (rootPath.isEmpty())
         return;
     m_fs->setRootPath(rootPath);
-    m_dir = QDir::cleanPath(rootPath);
+    m_dir = QDir::cleanPath(rootPath);          // 用于规范化路径字符串，避免在不同操作系统或环境下出现路径不一致的问题。
     static_cast<MainWindow *>(mp_parent)->filetreeShowAction(m_dir);
 
     // set root index from given root path
@@ -340,7 +341,7 @@ void LocalFileSystemViewer::changeRootPath(const QString &rootPath)
     }
 
     // only show the filename column
-    for (int i = 1; i < header()->count(); i++)
+    for (int i = 1; i < header()->count(); i++) // header()：用于获取树形视图的列标题头
     {
         hideColumn(i);
     }
@@ -351,7 +352,7 @@ void LocalFileSystemViewer::changeRootPath(const QString &rootPath)
 
     // set some window properties
     updatePathEdit(m_dirs.top());
-    setWindowTitle(m_dirs.top());
+    setWindowTitle(m_dirs.top());               // setWindowTitle()接口是属于QWidget的成员函数，QTreeView是QWidget的子类
 }
 
 void LocalFileSystemViewer::keyPressEvent(QKeyEvent *event)

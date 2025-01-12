@@ -627,7 +627,7 @@ void MainWindow::setWindowComponet(void)
 
 void MainWindow::filetreeShowAction(QString &str)
 {
-    mp_bar_left->setStatusTip(str);
+    mp_bar_left->setStatusTip(str);                                     // 更新左工具栏的状态提示
     string home = str.toStdString();
     std::vector<std::string> pathes;
     pathes.emplace_back(home);

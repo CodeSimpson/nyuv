@@ -153,6 +153,9 @@ public slots:
     void setResetAction(void);
     void updateAction(void);
     void helpAction(void);
+    /*
+     * 功能：更新文件树状态提示
+    */
     void filetreeShowAction(QString &str);
     void addToAction(void);
     void preferAction(void);
