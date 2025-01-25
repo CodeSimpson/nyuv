@@ -102,7 +102,7 @@ private:
     void setWindowComponet(void);
     void initImageResource(void);
     /*
-     * 功能：isauto为true时加载图片buffer并显示，为faslse时直接显示pixmap
+     * 功能：isauto为true时加载图片buffer并显示，为false时直接显示pixmap
     */
     void loadImageResource(const bool &isauto = true);
     RESULT loadRawSet();
