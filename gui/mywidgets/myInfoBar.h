@@ -121,6 +121,9 @@ private:
 
     BOOL checkBPTip();
 
+    /*
+     * 功能：初始化图像格式信息栏布局
+    */
     void initBox();
     void initFormat();
 };
