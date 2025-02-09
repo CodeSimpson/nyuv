@@ -41,6 +41,9 @@ public:
     void updateFit();
 
 private slots:
+    /*
+     * 功能：槽函数，发送信号processBtnClicked()
+    */
     void OnProcessBtnClicked();
     void OnApplyBtnClicked();
     void updateHeight();
@@ -112,6 +115,9 @@ private:
     STATS_INFO m_stats;
 
 private:
+    /*
+     * 功能：初始化图像格式信息栏Format窗口布局，返回Format窗口布局管理器
+    */
     QGridLayout *initFormatBox();
     QGridLayout *initViewBox();
     QGridLayout *initCheckBox();

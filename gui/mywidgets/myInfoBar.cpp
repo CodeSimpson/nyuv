@@ -218,7 +218,7 @@ QGridLayout *ImageInformationBar::initFormatBox()
     m_width = new mySpinBox(this, 1, 1, 99999, 0);
     m_height = new mySpinBox(this, 1, 1, 99999, 0);
     m_stride = new mySpinBox(this, 1, 0, 99999, 0);
-    m_align = new mySpinBox(this, 1, 0, 99999, 0); //只用来显示，=stride-width
+    m_align = new mySpinBox(this, 1, 0, 99999, 0);      // 只用来显示，align = stride-width
 
     m_process_btn = new QPushButton(tr("提交"), this);
     connect(m_process_btn, SIGNAL(clicked()), this, SLOT(OnProcessBtnClicked()));
@@ -266,7 +266,8 @@ QGridLayout *ImageInformationBar::initFormatBox()
     pLayout_format_bnt->addWidget(m_flock_btn, 0, 0, 1, 1);
     pLayout_format_bnt->addWidget(m_process_btn, 0, 1, 1, 4);
     pLayout_format->setRowMinimumHeight(6, 36);
-    pLayout_format->addLayout(pLayout_format_bnt, 6, 0, 1, 3);
+    pLayout_format->addLayout(pLayout_format_bnt, 6, 0, 1, 3);      // 这里直接将布局管理器pLayout_format内部再添加了一个布局管理器pLayout_format_bnt，这是允许的，
+                                                                    // 也可以通过一个包含QGridLayout的QWidget嵌套，这样可以将子布局与其它组件物理隔离
 
     return pLayout_format;
 }

@@ -41,7 +41,13 @@ MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
     	new ImageInformationBar()	// 实例化QFrame派生类，图像格式信息类
     	--->QFrame::setFrameShape()
     		QFrame::setFrameShadow()
-    		initBox()				// 
+    		initBox()				// 初始化图像格式信息栏布局
+    		--->initFormatBox()		// 初始化图像格式信息栏Format窗口布局，返回Format窗口布局管理器。
+    			--->createTypeComboBox()	// 创建Format窗口支持的图像格式下拉列表
+    			--->new QSpinBox()			// 整数输入组件，确定图像宽高等信息
+    			--->new QPushButton("提交")	// 提交图像并显示
+    			--->connect()		// 连接QButton、QSpinBox对应的信号和槽函数
+    
     		--->QWidget::setLayout()// 设置当前窗口的布局管理器为m_layout
     		initFormat()			// 
     	new LocalFileSystemViewer()		// 实例化文件树视图QTreeView派生类
@@ -53,7 +59,17 @@ MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
 cvt_schedul_uninit()
 ```
 
+**注解：**
 
+* `ImageInformationBar::initFormatBox()`初始化“提交”按钮，并连接槽函数`OnProcessBtnClicked()`，该槽函数发送信号`void processBtnClicked(const IMAGEINFO)`，由主窗口MainWindow接收并触发主窗口槽函数`settingTriggered(const IMAGEINFO)`。
+
+* 图像大小信息中width、height、stride和align的作用
+
+  * width、height表示图像宽高
+  * stride表示跨距，是图像一行数据的实际字节数，通常大于或等于width
+  * align表示内存对齐的字节数
+
+  假设有一张raw图，width为5个像素，height为4个像素，每个像素占2个字节，align要求4字节对齐，即硬件要求每行数据按4个字节对齐，此时每行的理论字节数为10字节，不是4的倍数，因此需要填充2字节，stride为12。
 
 ### 2. Qt类
 
@@ -74,3 +90,15 @@ cvt_schedul_uninit()
 * QGridLayout类：布局管理器类
   * setSpacing()：设置水平和垂直方向的间距。
   * setContentsMargins()：基类QLayout成员函数，设置布局与其父容器间的内容边距。
+  * addLayout()：布局管理器内部直接再添加一个布局管理器
+* QComboBox类：下拉列表类
+  * addItems()：添加下拉列表的列表内容
+  * setMaximumSize()：基类QWidget成员函数，设置最大宽高
+  * setFont()：基类QWidget成员函数，设置当前组件格式
+* QSpinBox类：微调框类，带有按钮的输入框，可以直接输入或通过按钮输入整数值
+  * setSingleStep()：设置按钮的调整步长
+  * setMinimum()：设置输入框的最小值
+  * setMaximum()：设置输入框的最大值
+  * setValue()：设置输入框的值，若值与旧值不同，则会触发一个signal信号
+  * setSuffix()：设置输入框的后缀Qstring
+  * setDisabled()：基类QWidget成员函数，为true时关闭当前组件的输入功能
