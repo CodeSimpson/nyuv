@@ -47,6 +47,15 @@ MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
     			--->new QSpinBox()			// 整数输入组件，确定图像宽高等信息
     			--->new QPushButton("提交")	// 提交图像并显示
     			--->connect()		// 连接QButton、QSpinBox对应的信号和槽函数
+    		--->initCheckBox()		// 初始化check栏窗口布局，设置功能
+    			--->setBayerShow()	// 显示bayer格式或者rgb格式
+    			--->setFit()		// 自适应窗口大小
+    			--->setHF()			// 更准确推导格式
+    			--->setAL()			// 使用自动亮度
+    			--->setStats()		// 计算图像stats信息
+    		--->initSliderBox()
+    
+    
     
     		--->QWidget::setLayout()// 设置当前窗口的布局管理器为m_layout
     		initFormat()			// 
@@ -91,6 +100,7 @@ cvt_schedul_uninit()
   * setSpacing()：设置水平和垂直方向的间距。
   * setContentsMargins()：基类QLayout成员函数，设置布局与其父容器间的内容边距。
   * addLayout()：布局管理器内部直接再添加一个布局管理器
+  * addWidget(QWidget* widget, int row, int column, int rowSpan, int columnSpan)：添加布局单元到布局管理器的row行和column列，行高为rawSpan，列长为columnSpan。
 * QComboBox类：下拉列表类
   * addItems()：添加下拉列表的列表内容
   * setMaximumSize()：基类QWidget成员函数，设置最大宽高
@@ -102,3 +112,11 @@ cvt_schedul_uninit()
   * setValue()：设置输入框的值，若值与旧值不同，则会触发一个signal信号
   * setSuffix()：设置输入框的后缀Qstring
   * setDisabled()：基类QWidget成员函数，为true时关闭当前组件的输入功能
+* QLabel类：标签类，显示静态文本或者图像并提供一系列格式化和交互功能。
+  * setAlignment()：设置对齐样式
+  * setFont()：设置文本格式
+* QPushButton类：按钮类
+  * setIcon()：设置Icon符号
+  * setToolTip()：基类QLayout成员函数，设置工具提示内容
+* QCheckBox()类：复选框类，允许用户选择一个或多个选项
+  * setCheckState()：设置复选框状态

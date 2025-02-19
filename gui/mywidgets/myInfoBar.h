@@ -120,6 +120,9 @@ private:
     */
     QGridLayout *initFormatBox();
     QGridLayout *initViewBox();
+    /*
+     * 功能：初始化check栏窗口布局
+    */
     QGridLayout *initCheckBox();
     QGridLayout *initSliderBox();
     QGridLayout *initStatsBox();
