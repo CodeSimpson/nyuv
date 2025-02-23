@@ -124,7 +124,13 @@ private:
      * 功能：初始化check栏窗口布局
     */
     QGridLayout *initCheckBox();
+    /*
+     * 功能：初始化slider栏窗口布局，确定图像的缩放大小
+    */
     QGridLayout *initSliderBox();
+    /*
+     * 功能：初始化数据统计stats栏布局
+    */
     QGridLayout *initStatsBox();
     QComboBox *createTypeComboBox(const QStringList &supportedFormats);
 
@@ -134,6 +140,9 @@ private:
      * 功能：初始化图像格式信息栏布局
     */
     void initBox();
+    /*
+     * 功能：初始化并自动推导图片格式
+    */
     void initFormat();
 };
 

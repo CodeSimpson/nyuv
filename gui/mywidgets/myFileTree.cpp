@@ -87,7 +87,7 @@ LocalFileSystemViewer::LocalFileSystemViewer(const QString &rootPath, QWidget *p
     // connect signals and slots
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(onDoubleClicked(const QModelIndex &)));
-    connect(this, SIGNAL(clicked(const QModelIndex &)),
+    connect(this, SIGNAL(clicked(const QModelIndex &)),     // 单击需要相应的只有文件展开还是折叠操作
             this, SLOT(onClicked(const QModelIndex &)));
     // connect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
     //         this, SLOT(slotTreeMenu(const QPoint &)));

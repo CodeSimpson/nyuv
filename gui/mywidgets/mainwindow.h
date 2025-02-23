@@ -83,21 +83,21 @@ private:
     ImageInformationBar *m_setting;                     // 设置图片格式信息类
 
     /* new class */
-    QImageViewer *m_imageviewer;
+    QImageViewer *m_imageviewer;                        // 自定义类，保存image buffer和image格式信息
     QImageViewer *m_tmpviewer;
     QList<QImageViewer *> m_imageviewer_list;
 
     /*
-     * 功能：实例化主窗口中各组件对象
+     * 功能：实例化主窗口中各组件对象，初始化图像格式信息栏和目录栏组件布局
     */
     void initMainWindow(void);
     void initUiComponent(void);
     /*
-     * 功能：设置中心组件和标签组件的格式
+     * 功能：初始化显示图像的标签组件QLabel，添加滚动视图框架
     */
     void setQImageViewerWidget(void);
     /*
-     * 功能：实例化QAction，连接对应的槽函数，配置各菜单栏和工具栏
+     * 功能：为菜单栏和工具栏添加QAction，并连接上对应的槽函数
     */
     void setWindowComponet(void);
     void initImageResource(void);

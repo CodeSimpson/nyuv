@@ -26,11 +26,11 @@ int main(int argc, char ** argv)
 * 启动程序
 
 ```c++
-cvt_schedul_init()
+cvt_schedul_init()			// 加载动态库
 MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
 --->autocomplete_load()		// 自动加载.nyuv.config文件中根目录路径
     loadRawSet()			// 加载liblist.xml中不同lib的source port支持的raw格式
-    initMainWindow()		// 实例化主窗口中的各组件，并设置主窗口所属的菜单栏、工具栏和状态栏
+    initMainWindow()		// 实例化主窗口中的各组件，初始化图像格式信息栏和目录栏组件布局
     --->QWidget::setAcceptDrops()
     	QMainWindow::setMenuBar()
     	QMainWindow::addTooBar()
@@ -53,20 +53,53 @@ MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
     			--->setHF()			// 更准确推导格式
     			--->setAL()			// 使用自动亮度
     			--->setStats()		// 计算图像stats信息
-    		--->initSliderBox()
-    
-    
-    
+    		--->initSliderBox()		// 初始化slider栏窗口布局，确定图像的缩放大小
+    			--->setZoomValue()
+    		--->initStatsBox()		// 初始化数据统计stats栏布局
+    			--->calStats()
     		--->QWidget::setLayout()// 设置当前窗口的布局管理器为m_layout
-    		initFormat()			// 
+    		initFormat()			//  初始化并自动推导图片格式
+    		--->autocomplete_init()
     	new LocalFileSystemViewer()		// 实例化文件树视图QTreeView派生类
 		--->QWidget::setStyleSheet()	// 设置文件目录栏格式
-    		
+    	--->QTreeView::header()			// 返回QTreeView的表头对象
+    	--->new QFileSystemModel()		// 数据模型，用于管理文件系统，供视图类使用
+    	--->QFileSystemModel::setNameFilterDisables()
+    	--->QFileSystemModel::setNameFilters()
+  		--->QFileSystemModel::setIconProvider()
+    	--->connet()	// 连接信号和槽函数，需要区别文件夹、文件还是展开按钮，以及单击还是双击
+    	--->changeRootPath()
+    		--->QFileSystemModel::setRootPath()	// 设置文件树视图根目录
+    		--->MainWindow::filetreeShowAction() // 更新主窗口状态栏
+    		--->QFileSystemModel::setRootIndex() // 根据rootPath设置rootIndex
+    		--->QFileSystemModel::hideColumn()
+    		--->updatePathEdit()		// 更新文件树目录编辑栏内容
 	initUiComponent()
+    --->setWindowComponet()		// 为菜单栏和工具栏添加QAction，并连接上对应的槽函数
+    	--->QTabBar::tabCloseRequested()	// 选项卡关闭按钮点击时触发
+    	--->QTabBar::currentChanged()		// 当标签栏的当前标签发生变化时，会发出此信号
+    	--->QTabBar::tabMoved()				// 移动标签栏时触发
+   	--->setQImageViewerWidget()	// 初始化显示图像的标签组件QLabel，添加滚动视图框架
    	initImageResource()
-    new QImageViewer()
-cvt_schedul_uninit()
+    --->QLabel::clear()		// 清空显示图像标签组件的内容
+    --->QMainWindow::setWindowTitle	// 设置主窗口标题
+    new QImageViewer()		// 用于保存图像buffer和格式信息
+cvt_schedul_uninit()		// 释放动态库
 ```
+
+* 执行程序
+
+```c++
+// 通过拖拽一张图片并显示
+MainWindow::setAcceptDrops(true); 				// 首先设置主窗口接受拖放事件
+void dragEnterEvent(QDragEnterEvent *) Q_DECL_OVERRIDE;	// 通过重写QWidget的mousePressEvent、mouseMoveEvent和mouseReleaseEvent等方法来实现拖放功能，并结合使用QMimeData和QDrag类。
+void dropEvent(QDropEvent *) Q_DECL_OVERRIDE;
+
+// 通过菜单栏或工具栏选择一张图片打开并显示
+
+```
+
+
 
 **注解：**
 
@@ -80,10 +113,12 @@ cvt_schedul_uninit()
 
   假设有一张raw图，width为5个像素，height为4个像素，每个像素占2个字节，align要求4字节对齐，即硬件要求每行数据按4个字节对齐，此时每行的理论字节数为10字节，不是4的倍数，因此需要填充2字节，stride为12。
 
+
+
 ### 2. Qt类
 
 * QMainWindow类：主窗口类
-  * setAcceptDrops()：基类QWidget成员函数，设置当前窗口组件是否支持拖放事件。
+  * setAcceptDrops()：基类QWidget成员函数，设置当前窗口组件是否支持拖放事件【指直接拖拽一张图片到主窗口显示】。
   * setMenuBar()：设置主窗口所属的菜单栏。
   * addToolBar()：设置主窗口的工具栏，默认在窗口上部，可以添加在窗口四周，一个窗口可以添加多个工具栏。
   * setStatusBar()：设置主窗口的状态栏，此时QMainWindow会拥有该状态栏的所有权。
@@ -100,7 +135,7 @@ cvt_schedul_uninit()
   * setSpacing()：设置水平和垂直方向的间距。
   * setContentsMargins()：基类QLayout成员函数，设置布局与其父容器间的内容边距。
   * addLayout()：布局管理器内部直接再添加一个布局管理器
-  * addWidget(QWidget* widget, int row, int column, int rowSpan, int columnSpan)：添加布局单元到布局管理器的row行和column列，行高为rawSpan，列长为columnSpan。
+  * addWidget(QWidget* widget, int row, int column, int rowSpan, int columnSpan)：添加布局单元到布局管理器的row行和column列，行高为rawSpan，列长为columnSpan，==不转移所有权==。
 * QComboBox类：下拉列表类
   * addItems()：添加下拉列表的列表内容
   * setMaximumSize()：基类QWidget成员函数，设置最大宽高
@@ -118,5 +153,30 @@ cvt_schedul_uninit()
 * QPushButton类：按钮类
   * setIcon()：设置Icon符号
   * setToolTip()：基类QLayout成员函数，设置工具提示内容
-* QCheckBox()类：复选框类，允许用户选择一个或多个选项
+* QCheckBox类：复选框类，允许用户选择一个或多个选项
   * setCheckState()：设置复选框状态
+* QTreeView：树视图类，用于显示文件路径
+  * header()：返回QTreeView的表头对象
+  * setModel()：设置当前视图类的数据模型
+  * setRootIndex()：显示该索引对应的目录或数据项作为根节点。
+  * hideColumn(i)：隐藏当前视图第i列
+* QFileSystemModel：文件系统数据模型，用于在Qt应用程序中展示和管理文件系统的数据
+  * setFilter()：根据mask设置文件系统的过滤条件
+  * setNameFilterDisables()：设置未通过名称过滤器的文件是否被过滤或隐藏
+  * setNameFilters()：根据文件名设置过滤条件
+  * setIconProvider()：设置文件模型图标
+  * setRootPath()：设置根目录
+* QTabBar：选项卡栏，主要提供选项卡功能，使得用户可以通过不同的选项卡切换不同的内容或功能区域
+  * tabCloseRequested()：选项卡关闭按钮点击时触发
+  * currentChanged()：当标签栏的当前标签发生变化时，会发出此信号
+  * tabMoved()：移动标签栏时触发
+  * setTabsClosable()：设置选项卡是否可以关闭
+  * setAutoHide()：选项卡是否可以自动隐藏
+  * setMovable()：是否可移动
+  * setChangeCurrentOnDrag()：如果为真，则拖动标签栏时当前选项卡会自动更改
+  * setIconSize()：设置图标大小
+  * setElideMode()：如何隐藏过长的标签栏文本
+  * setShape()：设置标签栏形状
+* QScrollArea：滚动视图框架类
+  * setWidget()：设置widget成为滚动区域的子窗口小部件
+

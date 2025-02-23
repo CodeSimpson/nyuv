@@ -82,7 +82,7 @@ private:
 
 private:
     QFileSystemModel *m_fs;
-    QString m_dir;
+    QString m_dir;                              // 保存根目录路径
     QWidget *mp_parent;
     QModelIndex m_index;
 
