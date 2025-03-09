@@ -102,7 +102,7 @@ private:
     void setWindowComponet(void);
     void initImageResource(void);
     /*
-     * 功能：isauto为true时加载图片buffer并显示，为false时直接显示pixmap
+     * 功能：isauto为true时加载图片buffer并显示，为false时直接显示pixmap，默认为true
     */
     void loadImageResource(const bool &isauto = true);
     RESULT loadRawSet();
@@ -144,10 +144,13 @@ public slots:
     void toLessenActionTriggered(void);
     void deleteActionTriggered(void);
     /*
-     * 功能：加载当前路径下的图片并显示
+     * 功能：保存并更新文件路径，加载当前路径下的图片并显示
      * 参数：包含文件名的文件绝对路径
     */
     void fileTreeTriggered(const QString &);
+    /**
+     * 功能：加载图片并显示
+    */
     void settingTriggered(const IMAGEINFO &);
     void setZoomAction(const int &);
     void setResetAction(void);

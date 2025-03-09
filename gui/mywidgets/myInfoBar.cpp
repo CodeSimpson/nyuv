@@ -482,7 +482,7 @@ IMAGEINFO ImageInformationBar::genIMAGEINFO()
     return gen;
 }
 
-static vector<string> types_str;
+static vector<string> types_str;    // 支持的图片格式
 void ImageInformationBar::parse(const QString &filename)
 {
     if (m_flock)

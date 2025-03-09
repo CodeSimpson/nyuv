@@ -32,6 +32,9 @@ public:
     explicit ImageInformationBar(const QStringList &supportedFormats, QWidget *parent = nullptr);
 
     IMAGEINFO value();
+    /*
+     * 功能：根据文件路径filename解析图片格式
+    */
     void parse(const QString &filename);
     void setZoom(const int &);
     void setInfo(const IMAGEINFO &);
@@ -69,7 +72,7 @@ signals:
 private:
     QGridLayout *m_layout;
 
-    QComboBox *m_type;
+    QComboBox *m_type;              // 图像格式
     QSpinBox *m_height;
     QSpinBox *m_width;
     QSpinBox *m_stride;
@@ -79,7 +82,7 @@ private:
     QCheckBox *m_bayer;
     QCheckBox *m_fit;
     QCheckBox *m_hard_format;
-    QCheckBox *m_auto_light;
+    QCheckBox *m_auto_light;        // 自动亮度复选框
     QCheckBox *m_stats_info;
 
     QSpinBox *mp_spin_zoom;

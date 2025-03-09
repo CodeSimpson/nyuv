@@ -646,6 +646,7 @@ void MainWindow::fileTreeTriggered(const QString &filename)
         return;
     }
 
+    // 设置自动亮度复选框为未选状态
     m_setting->resetAL(Qt::Unchecked);
     loadImageResource();
 }

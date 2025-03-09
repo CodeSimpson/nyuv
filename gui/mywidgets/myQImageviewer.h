@@ -43,15 +43,18 @@ public:
     QImage origin_image;
 
     REQUESTINFO rawRequest;
-    std::string rawType;
-    char cfilename[1024];
+    std::string rawType;                            // 图像格式string
+    char cfilename[1024];                           // 图像文件路径
 
-    IMAGEINFO rawinfo;
+    IMAGEINFO rawinfo;                              // 图像格式、宽、高、stride等信息
     STATS_INFO m_stats;
 
     void setStats(const STATS_INFO& stats) { m_stats = stats; }
     STATS_INFO getStats() { return m_stats; }
 
+    /*
+     * 功能：process为true时加载并转换图像buffer，默认为true
+    */
     RESULT setRaw(const IMAGEINFO &imgInfo, const bool& process=true);
     RESULT justSetRaw(const IMAGEINFO &imgInfo);
     RESULT justSetAngle(const int &angle);
@@ -113,7 +116,13 @@ private:
      * 功能：加载filename路径下的图片buffer到image中
     */
     RESULT upgradeFileInfo(QString &filename,int angle,int sizeScale);
+    /*
+     * 功能：加载普通图到成员变量image中
+    */
     RESULT loadNormalImg(QString &filename,int angle,int sizeScale);
+    /*
+     * 功能：转换并加载raw图到成员变量image中
+    */
     RESULT loadRawImg(QString &filename,int angle,int sizeScale);
     RESULT setAngleAndScale(const int &angle, const int &sizeScale);
     RESULT indexLoop(const std::function<void(int &)>&);

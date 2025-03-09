@@ -87,7 +87,7 @@ MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
 cvt_schedul_uninit()		// 释放动态库
 ```
 
-* 执行程序
+* 执行程序：通过菜单栏或工具栏打开一张图片
 
 ```c++
 // 通过拖拽一张图片并显示
@@ -96,7 +96,20 @@ void dragEnterEvent(QDragEnterEvent *) Q_DECL_OVERRIDE;	// 通过重写QWidget�
 void dropEvent(QDropEvent *) Q_DECL_OVERRIDE;
 
 // 通过菜单栏或工具栏选择一张图片打开并显示
-
+openActionTriggered()	// mp_action_open::triggered()触发打开图片槽函数
+--->QFileDialog::getOpenFileName()
+--->fileTreeTriggered()
+    --->QImageViewer::openImageFile()			// 加载图片文件信息到fileInfoList中
+    --->loadImageResource(true)					// 加载图像buffer并显示
+    	--->ImageInformationBar::parse()		// 解析文件格式
+    		--->ImageInformationBar::set()		// 保存文件格式到图像格式信息栏的成员变量中
+    	--->settingTriggered()
+    		--->QImageViewer::setRaw(, true)	// 记录图像格式，并加载图像buffer
+    			--->QImageViewer::upgradeFileInfo()
+    				--->loadNormalImg()			// 加载普通图
+    				--->loadRawImg()			// 加载raw图
+    					--->cvt_process()		// 调用动态库做格式转换
+    		--->loadImageResource(false)		// 直接显示图片  
 ```
 
 
@@ -179,4 +192,7 @@ void dropEvent(QDropEvent *) Q_DECL_OVERRIDE;
   * setShape()：设置标签栏形状
 * QScrollArea：滚动视图框架类
   * setWidget()：设置widget成为滚动区域的子窗口小部件
+* QFileDialog：qt中用于选择文件或目录的对话框类
+  * getOpenFileName()：静态函数，可以打开一个对话框，让用户选择一个文件并返回选中的文件路径。
+
 

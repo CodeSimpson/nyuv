@@ -118,7 +118,7 @@ typedef enum class __TYPE__
  * **/
 typedef struct __FORMAT__
 {
-    TYPE type;
+    TYPE type;              // raw格式或者yuv格式
     UINT32 height;
     UINT32 width;
     UINT32 stride;
@@ -251,7 +251,7 @@ typedef struct __REQUESTINFO__
 
 typedef struct __IMAGEINFO__
 {
-    std::string type;
+    std::string type;       // 图像格式string
     FORMAT format;
     BOOL bayer;
 
