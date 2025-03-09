@@ -19,7 +19,7 @@ int main(int argc, char ** argv)
 
 
 
-**完整的代码执行逻辑：**
+#### 1.1 完整的代码执行逻辑
 
 > 只注释自定义函数功能
 
@@ -112,9 +112,14 @@ openActionTriggered()	// mp_action_open::triggered()触发打开图片槽函数
     		--->loadImageResource(false)		// 直接显示图片  
 ```
 
+* 输入图像格式并提交显示
+
+```c++
+```
 
 
-**注解：**
+
+#### 1.2 注解
 
 * `ImageInformationBar::initFormatBox()`初始化“提交”按钮，并连接槽函数`OnProcessBtnClicked()`，该槽函数发送信号`void processBtnClicked(const IMAGEINFO)`，由主窗口MainWindow接收并触发主窗口槽函数`settingTriggered(const IMAGEINFO)`。
 
@@ -194,5 +199,36 @@ openActionTriggered()	// mp_action_open::triggered()触发打开图片槽函数
   * setWidget()：设置widget成为滚动区域的子窗口小部件
 * QFileDialog：qt中用于选择文件或目录的对话框类
   * getOpenFileName()：静态函数，可以打开一个对话框，让用户选择一个文件并返回选中的文件路径。
+
+
+
+### 3. 动态库的加载和关闭
+
+​	我们定义一个类`SCHEDULE`类保存不同功能动态库对应的句柄，并在程序启动时自动加载动态库，在程序关闭时自动关闭动态库。在源文件`cvtinterface.cpp`中，我们定义了一个静态全局变量`p_cvt_instance`来保存类`SCHEDULE`的类实例。
+
+* 自动加载动态库
+
+```c++
+// 启动程序
+cvt_schedul_init()
+--->SCHEDULE::SCHEDULE()
+    --->SCHEDULE::getLibList()	// 解析libxml.xml，保存动态库名称、输入图和输出图格式
+    --->SCHEDULE::linkTest()
+    --->SCHEDULE::loadLibs()
+    --->SCHEDULE::initLibs()
+```
+
+* 自动关闭动态库
+
+```c++
+// 程序执行结束
+cvt_schedul_uninit()
+    
+```
+
+
+
+### 4. CMake编译
+
 
 

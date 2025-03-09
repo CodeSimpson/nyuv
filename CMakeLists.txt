@@ -33,7 +33,8 @@ endif()
 message("CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread")
 
-
+# 顶层CMakeLists.txt设置全局包含路径，所有子目录都可以访问以下目录中的头文件， 但这不符合现代CMake强调的以Target为中心的依赖管理思想，
+# 即每个目标（库或可执行文件）应显式声明自己的依赖项（如头文件路径、链接库等），非最佳实践。
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/common/base)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/common/utils)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/common/utils/tinyxml2)

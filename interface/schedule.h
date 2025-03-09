@@ -19,10 +19,10 @@ using namespace std;
 
 typedef struct __LIB__
 {
-    string libname;
-    string source;
-    string target;
-    CVTENTRY instance;
+    string libname;         // 动态库名称
+    string source;          // 输入buffer格式
+    string target;          // 输出buffer格式
+    CVTENTRY instance;      // 动态库构建和析构入口
 
     public:
     __LIB__(const string &a, const string &b, const string &c)
@@ -65,13 +65,13 @@ private:
 private:
 
     TYPE m_type;
-    string m_target;
+    string m_target;            // sink_target: RGB888
     string m_source;
     REQUESTINFO m_inputinfo;
     REQUESTINFO m_outputinfo;
 
     map<string, void *> m_libinstance;
-    map<string, LIB> m_libs;
+    map<string, LIB> m_libs;                            // <source format, LIB>
     map<string, TYPE> m_typemap;
     map<string, std::pair<CALLBACKS, CVT *>> m_cvts;
 
