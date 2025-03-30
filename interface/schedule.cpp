@@ -218,8 +218,8 @@ RESULT SCHEDULE::initLibs()
         decltype(m_libs)::iterator it = m_libs.find(type);
         CVTENTRY cvt_entry = it->second.instance;
         CALLBACKS cvt_callbacks;
-        cvt_entry(cvt_callbacks);
-        CVT *cvt = cvt_callbacks.create(type);
+        cvt_entry(cvt_callbacks);               // 获得算法库的构造和析购函数
+        CVT *cvt = cvt_callbacks.create(type);  // 算法库实例化
 
         m_cvts.emplace(type, std::pair<CALLBACKS, CVT *>(cvt_callbacks, cvt));
     }
@@ -329,6 +329,7 @@ RESULT SCHEDULE::process(const string &type, REQUESTINFO &requestInfo)
     }
     m_source = type;
 
+    // decltype：自动推导类型
     decltype(m_libs)::iterator it = m_libs.find(type);
     if (it == m_libs.end()) //需要判断有没有这个key(图像格式)
     {
@@ -337,6 +338,10 @@ RESULT SCHEDULE::process(const string &type, REQUESTINFO &requestInfo)
     }
     else
     {
+        /* 
+         * mutable关键字允许在lambda表达式中修改按值捕获的变量，默认在lambda表达式中
+         * 按值捕获的变量不可修改，编译器会报错，这里通过引用捕获外部变量，所以mutable关键字作用不明显。
+        */
         auto processByIter = [&]() mutable -> RESULT {
             ret = loadInputFile(requestInfo);
             if (ret == RESULT::SUCCESS)
@@ -374,10 +379,13 @@ RESULT SCHEDULE::iterator(const string &type, REQUESTINFO &requestInfo)
             CVT *cvt = m_cvts.find(type)->second.second;
             //cvt node需要设置自己会输出多大的buffer
             cvt->setOBufferInfo(requestInfo.oformat, requestInfo.iformat);
-            //buffer 在外面设置，所以cvt node无需关系创建buffer
+            //buffer 在外面设置，所以cvt node无需关心创建buffer
             requestInfo.obuffer.resize(requestInfo.oformat.size);
 
             double cost = .0;
+            // std::bing() 用于将可调用对象与参数绑定，生成一个新的可调用对象，对于多个形参的函数，可以通过
+            // bind()固定其中的某些输入参数，其他参数填充占位符std::placeholders::_1，在新的可调用对象中输入
+            // 这里纯属炫技，没看出有啥好处。。。
             std::tie(ret, cost) = tools::runByTime<RESULT>(std::bind(&CVT::cvt, cvt, std::ref(requestInfo)));
             LOGI("processing {} -> {} cost {}ms", type, it->second.target, cost);
 
@@ -408,14 +416,14 @@ RESULT SCHEDULE::loadInputFile(REQUESTINFO &requestInfo)
     RESULT ret = RESULT::SUCCESS;
     ifstream inputfile;
     inputfile.open(requestInfo.ifilename, ios::in | ios::binary);
-    if (!inputfile)
+    if (!inputfile.is_open())
     {
         LOGE("can not open {}", requestInfo.ifilename);
         return RESULT::INVALID_FILE;
     }
 
     CVT *cvt = m_cvts.find(m_source)->second.second;
-    if (!cvt->testIBuffer(requestInfo.iformat))
+    if (!cvt->testIBuffer(requestInfo.iformat))     // 判断宽高是否为偶数
     {
         return RESULT::INVALID_FORMAT;
     }
@@ -423,7 +431,7 @@ RESULT SCHEDULE::loadInputFile(REQUESTINFO &requestInfo)
 
     inputfile.seekg(0, inputfile.end);
     size_t file_size = inputfile.tellg();
-    requestInfo.ibuffer.resize(max(file_size, requestInfo.iformat.size));
+    requestInfo.ibuffer.resize(max(file_size, requestInfo.iformat.size));   // 分配输入图需要的buffer
     inputfile.seekg(0, inputfile.beg);
     inputfile.read((CHAR *)requestInfo.ibuffer.begin(), requestInfo.ibuffer.size());
     inputfile.close();

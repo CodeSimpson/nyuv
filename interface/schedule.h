@@ -60,20 +60,23 @@ private:
     RESULT uninitLibs();
     BOOL success();
     RESULT iterator(const string &type, REQUESTINFO &requestInfo);
+    /*
+     * 功能：分配内存并以二进制形式加载图片数据
+    */
     RESULT loadInputFile(REQUESTINFO &requestInfo);
 
 private:
 
     TYPE m_type;
     string m_target;            // sink_target: RGB888
-    string m_source;
+    string m_source;            // 图像信息栏输入格式
     REQUESTINFO m_inputinfo;
     REQUESTINFO m_outputinfo;
 
-    map<string, void *> m_libinstance;
+    map<string, void *> m_libinstance;                  // <libname, handle>
     map<string, LIB> m_libs;                            // <source format, LIB>
     map<string, TYPE> m_typemap;
-    map<string, std::pair<CALLBACKS, CVT *>> m_cvts;
+    map<string, std::pair<CALLBACKS, CVT *>> m_cvts;    // <source format, <算法库构造/析购入口, 算法库实例>>
 
     RESULT m_init;
 };

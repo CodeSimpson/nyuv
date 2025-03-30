@@ -21,16 +21,14 @@ int main(int argc, char ** argv)
 
 #### 1.1 完整的代码执行逻辑
 
-> 只注释自定义函数功能
-
 * 启动程序
 
 ```c++
 cvt_schedul_init()			// 加载动态库
 MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
 --->autocomplete_load()		// 自动加载.nyuv.config文件中根目录路径
-    loadRawSet()			// 加载liblist.xml中不同lib的source port支持的raw格式
-    initMainWindow()		// 实例化主窗口中的各组件，初始化图像格式信息栏和目录栏组件布局
+    MainWindow::loadRawSet()			// 加载liblist.xml中不同lib的source port支持的raw格式
+    MainWindow::initMainWindow()		// 实例化主窗口中的各组件，初始化图像格式信息栏和目录栏组件布局
     --->QWidget::setAcceptDrops()
     	QMainWindow::setMenuBar()
     	QMainWindow::addTooBar()
@@ -41,24 +39,24 @@ MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
     	new ImageInformationBar()	// 实例化QFrame派生类，图像格式信息类
     	--->QFrame::setFrameShape()
     		QFrame::setFrameShadow()
-    		initBox()				// 初始化图像格式信息栏布局
-    		--->initFormatBox()		// 初始化图像格式信息栏Format窗口布局，返回Format窗口布局管理器。
-    			--->createTypeComboBox()	// 创建Format窗口支持的图像格式下拉列表
+    		ImageInformationBar::initBox()				// 初始化图像格式信息栏布局
+    		--->ImageInformationBar::initFormatBox()		// 初始化图像格式信息栏Format窗口布局，返回Format窗口布局管理器。
+    			--->ImageInformationBar::createTypeComboBox()	// 创建Format窗口支持的图像格式下拉列表
     			--->new QSpinBox()			// 整数输入组件，确定图像宽高等信息
     			--->new QPushButton("提交")	// 提交图像并显示
-    			--->connect()		// 连接QButton、QSpinBox对应的信号和槽函数
-    		--->initCheckBox()		// 初始化check栏窗口布局，设置功能
-    			--->setBayerShow()	// 显示bayer格式或者rgb格式
-    			--->setFit()		// 自适应窗口大小
-    			--->setHF()			// 更准确推导格式
-    			--->setAL()			// 使用自动亮度
-    			--->setStats()		// 计算图像stats信息
-    		--->initSliderBox()		// 初始化slider栏窗口布局，确定图像的缩放大小
-    			--->setZoomValue()
-    		--->initStatsBox()		// 初始化数据统计stats栏布局
-    			--->calStats()
+    			--->ImageInformationBar::initFormatBox()::connect()		// 连接QButton、QSpinBox对应的信号和槽函数
+    		--->ImageInformationBar::initCheckBox()		// 初始化check栏窗口布局，设置功能
+    			--->ImageInformationBar::setBayerShow()	// 显示bayer格式或者rgb格式
+    			--->ImageInformationBar::setFit()		// 自适应窗口大小
+    			--->ImageInformationBar::setHF()			// 更准确推导格式
+    			--->ImageInformationBar::setAL()			// 使用自动亮度
+    			--->ImageInformationBar::setStats()		// 计算图像stats信息
+    		--->ImageInformationBar::initSliderBox()		// 初始化slider栏窗口布局，确定图像的缩放大小
+    			--->ImageInformationBar::setZoomValue()
+    		--->ImageInformationBar::initStatsBox()		// 初始化数据统计stats栏布局
+    			--->ImageInformationBar::calStats()
     		--->QWidget::setLayout()// 设置当前窗口的布局管理器为m_layout
-    		initFormat()			//  初始化并自动推导图片格式
+    		ImageInformationBar::initFormat()			//  初始化并自动推导图片格式
     		--->autocomplete_init()
     	new LocalFileSystemViewer()		// 实例化文件树视图QTreeView派生类
 		--->QWidget::setStyleSheet()	// 设置文件目录栏格式
@@ -67,23 +65,24 @@ MainWindow::MainWindow()	// 自定义主窗口类默认构造函数
     	--->QFileSystemModel::setNameFilterDisables()
     	--->QFileSystemModel::setNameFilters()
   		--->QFileSystemModel::setIconProvider()
-    	--->connet()	// 连接信号和槽函数，需要区别文件夹、文件还是展开按钮，以及单击还是双击
-    	--->changeRootPath()
+    	--->LocalFileSystemViewer::initPathBox()::connect()	// 连接信号和槽函数，需要区别文件夹、文件还是展开按钮，以及单击还是双击
+    	--->LocalFileSystemViewer::changeRootPath()
     		--->QFileSystemModel::setRootPath()	// 设置文件树视图根目录
     		--->MainWindow::filetreeShowAction() // 更新主窗口状态栏
     		--->QFileSystemModel::setRootIndex() // 根据rootPath设置rootIndex
     		--->QFileSystemModel::hideColumn()
-    		--->updatePathEdit()		// 更新文件树目录编辑栏内容
-	initUiComponent()
-    --->setWindowComponet()		// 为菜单栏和工具栏添加QAction，并连接上对应的槽函数
+    		--->LocalFileSystemViewer::updatePathEdit()		// 更新文件树目录编辑栏内容
+	MainWindow::initUiComponent()
+    --->MainWindow::setWindowComponet()		// 为菜单栏和工具栏添加QAction，并连接上对应的槽函数
     	--->QTabBar::tabCloseRequested()	// 选项卡关闭按钮点击时触发
     	--->QTabBar::currentChanged()		// 当标签栏的当前标签发生变化时，会发出此信号
     	--->QTabBar::tabMoved()				// 移动标签栏时触发
-   	--->setQImageViewerWidget()	// 初始化显示图像的标签组件QLabel，添加滚动视图框架
-   	initImageResource()
+   	--->MainWindow::setQImageViewerWidget()	// 初始化显示图像的标签组件QLabel，添加滚动视图框架
+   	MainWindow::initImageResource()
     --->QLabel::clear()		// 清空显示图像标签组件的内容
     --->QMainWindow::setWindowTitle	// 设置主窗口标题
     new QImageViewer()		// 用于保存图像buffer和格式信息
+QApplication::exec()
 cvt_schedul_uninit()		// 释放动态库
 ```
 
@@ -96,25 +95,37 @@ void dragEnterEvent(QDragEnterEvent *) Q_DECL_OVERRIDE;	// 通过重写QWidget�
 void dropEvent(QDropEvent *) Q_DECL_OVERRIDE;
 
 // 通过菜单栏或工具栏选择一张图片打开并显示
-openActionTriggered()	// mp_action_open::triggered()触发打开图片槽函数
+MainWindow::openActionTriggered()	// mp_action_open::triggered()触发打开图片槽函数
 --->QFileDialog::getOpenFileName()
---->fileTreeTriggered()
+--->MainWindow::fileTreeTriggered()
     --->QImageViewer::openImageFile()			// 加载图片文件信息到fileInfoList中
-    --->loadImageResource(true)					// 加载图像buffer并显示
+    --->MainWindow::loadImageResource(true)					// 加载图像buffer并显示
     	--->ImageInformationBar::parse()		// 解析文件格式
     		--->ImageInformationBar::set()		// 保存文件格式到图像格式信息栏的成员变量中
-    	--->settingTriggered()
+    	--->MainWindow::settingTriggered()
     		--->QImageViewer::setRaw(, true)	// 记录图像格式，并加载图像buffer
     			--->QImageViewer::upgradeFileInfo()
-    				--->loadNormalImg()			// 加载普通图
-    				--->loadRawImg()			// 加载raw图
-    					--->cvt_process()		// 调用动态库做格式转换
-    		--->loadImageResource(false)		// 直接显示图片  
+    				--->QImageViewer::loadNormalImg()			// 通过QImage类load接口加载普通图，自动分配内存。
+    				--->QImageViewer::loadRawImg()			// 加载raw图
+    					--->QImageViewer::cvt_process()		// 调用动态库做格式转换，接口内手动分配内存
+    		--->MainWindow::loadImageResource(false)		// 直接显示图片
 ```
 
 * 输入图像格式并提交显示
 
 ```c++
+// 选择图像格式
+QComboBox m_type;				// 直接选择下拉列表即可，通过currentText()获得所选内容
+
+// 输入图像宽高和stride
+QSpinBox m_height;				// 通过value()接口获得图像宽高和行跨距
+QSpinBox m_width
+QSpinBox m_stride;
+
+// 提交按钮按下
+QPushButton::clicked()
+--->OnProcessBtnClicked()		// 自定义槽函数，发送信号processBtnClicked()
+    --->signal::void processBtnClicked(const IMAGEINFO &imageInfo)
 ```
 
 
@@ -126,7 +137,7 @@ openActionTriggered()	// mp_action_open::triggered()触发打开图片槽函数
 * 图像大小信息中width、height、stride和align的作用
 
   * width、height表示图像宽高
-  * stride表示跨距，是图像一行数据的实际字节数，通常大于或等于width
+  * stride表示跨距，图像每一行数据在内存中占用的字节数，stride = width × bytes_per_pixel + padding。
   * align表示内存对齐的字节数
 
   假设有一张raw图，width为5个像素，height为4个像素，每个像素占2个字节，align要求4字节对齐，即硬件要求每行数据按4个字节对齐，此时每行的理论字节数为10字节，不是4的倍数，因此需要填充2字节，stride为12。
@@ -213,9 +224,9 @@ openActionTriggered()	// mp_action_open::triggered()触发打开图片槽函数
 cvt_schedul_init()
 --->SCHEDULE::SCHEDULE()
     --->SCHEDULE::getLibList()	// 解析libxml.xml，保存动态库名称、输入图和输出图格式
-    --->SCHEDULE::linkTest()
-    --->SCHEDULE::loadLibs()
-    --->SCHEDULE::initLibs()
+    --->SCHEDULE::linkTest()	// 判断各动态算法库的输入输出link是否正常（还比较呆）
+    --->SCHEDULE::loadLibs()	// dlopen加载动态库，然后通过dlsym找到对应的入口函数
+    --->SCHEDULE::initLibs()	// 算法库实例化
 ```
 
 * 自动关闭动态库
@@ -223,12 +234,34 @@ cvt_schedul_init()
 ```c++
 // 程序执行结束
 cvt_schedul_uninit()
-    
+--->SCHEDULE::~SCHEDULE()
+    --->SCHEDULE::uninitLibs()	// 算法库析构
 ```
 
+* 执行算法
 
+```c++
+QImageViewer::loadRawImg()
+--->QImageViewer::cvt_process()
+    --->SCHEDULE::process()
+        --->SCHEDULE::loadInputFile()
+            --->CVT::testIBuffer()		// 测试输入图宽高是否为偶数
+            --->CVT::getIBufferInfo()	// 计算输入图需要的buffer size
+            --->REQUESTINFO::BUFFER::resize()	// 分配输入图需要的buffer
+            --->ifstream::read()		// 以二进制形式读取图片数据
+        --->SCHEDULE::iterator()		// 包含一个递归逻辑
+            --->CVT::setOBufferInfo()	// 计算输出图需要的buffer size，一般输出都是RGB888格式
+            --->REQUESTINFO::BUFFER::resize()	// 分配输出图需要的buffer
+            --->CVT::cvt()				// 开始转换格式
+--->QImageViewer::setAngleAndScale()	// 旋转缩放并更新pixmap供显示
+```
 
 ### 4. CMake编译
+
+* 顶层CMakeLists.txt
+
+```cmake
+```
 
 
 

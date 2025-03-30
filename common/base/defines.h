@@ -121,7 +121,7 @@ typedef struct __FORMAT__
     TYPE type;              // raw格式或者yuv格式
     UINT32 height;
     UINT32 width;
-    UINT32 stride;
+    UINT32 stride;          // 图像每一行数据在内存中占用的字节数，stride = width × bytes_per_pixel + padding
     size_t size;
 
     bool isValid()

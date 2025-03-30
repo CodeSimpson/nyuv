@@ -135,6 +135,9 @@ private:
      * 功能：初始化数据统计stats栏布局
     */
     QGridLayout *initStatsBox();
+    /*
+     * 功能： 创建Format窗口支持的图像格式下拉列表
+    */
     QComboBox *createTypeComboBox(const QStringList &supportedFormats);
 
     BOOL checkBPTip();

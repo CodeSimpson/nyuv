@@ -124,6 +124,9 @@ private:
      * 功能：转换并加载raw图到成员变量image中
     */
     RESULT loadRawImg(QString &filename,int angle,int sizeScale);
+    /*
+     * 功能：执行旋转和缩放，并更新pixmap
+    */
     RESULT setAngleAndScale(const int &angle, const int &sizeScale);
     RESULT indexLoop(const std::function<void(int &)>&);
 
