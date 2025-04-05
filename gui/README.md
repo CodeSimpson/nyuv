@@ -260,8 +260,143 @@ QImageViewer::loadRawImg()
 
 * 顶层CMakeLists.txt
 
-```cmake
-```
+  * **添加宏定义**
+
+  ```cmake
+  add_definitions(-DINSTALL) # 向编译器传递预处理宏定义INSTALL
+  ```
+
+  ```c++
+  // 源代码使用示例：根据是否启用安装模式选择配置文件路径
+  #ifdef INSTALL
+      const std::string config_path = "/etc/nyuv/config.conf";  // 系统安装路径
+  #else
+      const std::string config_path = "./config.conf";          // 本地构建路径
+  #endif
+  ```
+
+  最佳实践：
+
+  ​	这里写在顶层CMakeLists.txt中，则宏定义为全局，如果希望便面直接使用`add_definitions`，则可以通过`target_compile_definitions`更加精确地控制宏定义，这种方式更符合现代CMake实践，能避免全局宏定义污染其他目标。
+  
+  ```cmake
+  if (${INSTALL})
+      target_compile_definitions(my_target PUBLIC INSTALL)  # 为指定目标添加宏
+  endif()
+  ```
+
+  * **添加链接库路径**
+
+  ```cmake
+  link_directories(${LIB_DIR})
+  ```
+  
+  ​	在CMake中，`link_directories()` 命令用于 ‌**向链接器（Linker）添加库文件的搜索路径**‌，使得链接器能够在指定目录中查找需要链接的共享库（`.so`、`.dll`）或静态库（`.a`、`.lib`）。该命令**全局生效**，后续所有的`target_link_libraries()`命令都会自动在这些路径中查找库文件。
+  
+  ```cmake
+  set(LIB_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}) # 设置库目录为构建输出路径
+  link_directories(${LIB_DIR})      # 链接目录
+  ```
+  
+  最佳实践：
+  
+   1. 作用域更明确，仅对指定目标生效
+  
+  ```cmake
+  target_link_directories(my_app PRIVATE ${LIB_DIR})  # 仅对 my_app 生效
+  ```
+  
+    2. 自动查找
+  
+  ```cmake
+  # 推荐方式：结合 find_library 自动查找
+  find_library(NYUV_LIB nyuv_lib PATHS ${LIB_DIR} REQUIRED)
+  target_link_libraries(my_app ${NYUV_LIB})
+  ```
+  
+  *  **设置编译选项**
+  
+  ```cmake
+  SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g2 -ggdb")     # 设置编译选项，-O0：关闭优化，-Wall：启用所有警告，-g2 -ggdb：生成GDB专用调试信息，级别2
+  ```
+  
+  ‌	CMAKE_CXX_FLAGS_DEBUG变量**定义Debug模式的编译选项**‌，当项目以 `Debug` 配置构建时（例如 `cmake -DCMAKE_BUILD_TYPE=Debug`），这些选项会被附加到C++编译器的命令行。`$ENV{CXXFLAGS}`继承环境变量 `CXXFLAGS` 的值（允许用户通过环境变量传递额外选项）。
+  
+  *  **向编译器添加头文件的搜索路径**
+  
+  ```cmake
+  INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/common/base)
+  ```
+  
+  ​	这条CMake命令的作用是 ‌**向编译器添加头文件的搜索路径**‌，使得项目中的源代码可以方便地引用指定目录下的头文件，该命令会影响 ‌**后续所有目标**‌（如通过 `add_executable` 或 `add_library` 创建的目标），所有目标的编译都会包含此路径。
+  
+  最佳实践：
+  
+  ```cmake
+  # 创建目标（如可执行文件或库）
+  add_executable(my_app main.cpp)
+  
+  # 仅为此目标添加头文件路径
+  target_include_directories(my_app PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/common/base)
+  ```
+  
+  *  **配置安装包**
+  
+  ```cmake
+  set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5core5a, libqt5gui5")
+  ```
+  
+  ​	声明该Debian包的运行时依赖，确保安装时会自动安装以下库：`libqt5core5a`（Qt5核心）、`libqt5gui5`（Qt5图形界面库），如果用户系统中未安装这些依赖，包管理器（如`apt`）会提示自动安装。
+  
+  * **自定义安装规则**
+  
+  ```cmake
+  set(CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS
+      OWNER_READ
+      OWNER_WRITE
+      OWNER_EXECUTE
+      GROUP_READ
+  )
+  ```
+  
+  ​	设置安装目录的默认权限，变量名`CMAKE_INSTALL_DEFAULT_DIRECTORY_PERMISSIONS`用于定义通过CMake `install(DIRECTORY ...)` 命令安装目录时的默认权限。
+  
+  ​	值得注意的是，该命令仅影响通过 `install(DIRECTORY ...)` 安装的目录，不影响单个文件的权限（文件权限由 `CMAKE_INSTALL_DEFAULT_FILE_PERMISSIONS` 控制）。**CMake中若没有显示指定安装目录，CMake不会自动推断或创建目录层级**‌，则CMake不会安装任何目录内容，需通过`install(DIRECTORY ...)`明确声明目录及其目标路径，以确保完整部署‌。
+  
+  ```cmake
+  file(GLOB GLOB_BIN ${EXECUTABLE_OUTPUT_PATH}/nyuv)      # 收集构建生成的可执行文件nyuv，路径由EXECUTABLE_OUTPUT_PATH指定
+  ```
+  
+  ​	`GLOB`用于匹配规则在指定的目录内找到所需的文件，并将这些文件的路径存储在变量中。
+  
+  ```cmake
+  INSTALL(FILES ${GLOB_BIN} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUT)    # 安装可执行文件到目录 /usr/bin
+  INSTALL(FILES ${GLOB_LIB} DESTINATION lib/nyuv)                         # 安装库文件到 /usr/lib/nyuv
+  ```
+  
+  ​	安装可执行文件`{GLOB_BIN}`和库文件`{GLOB_LIB}`，路径为 `/usr/bin`和`/usr/lib/nyuv`，由 `CMAKE_INSTALL_PREFIX=/usr` 和 `DESTINATION bin` 决定）。可执行文件权限为所有者可执行。
+  
+  ```cmake
+  INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/nyuv.desktop DESTINATION share/applications/) # 安装桌面启动程序
+  ```
+  
+  ​	安装路径为`/usr/share/applications/nyuv.desktop`，使应用程序出现在系统菜单或启动器中（需 `.desktop` 文件符合规范）。
+  
+  ```cmake
+  INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/.nyuv.config DESTINATION etc/nyuv/ PERMISSIONS WORLD_WRITE WORLD_READ) # 安装配置文件
+  ```
+  
+  ​	安装路径为 `/usr/etc/nyuv/.nyuv.config`，权限为全局可读可写（`rw-rw-rw-`，即 `666`）。
+  
+  *  **启用打包程序**
+  
+  ```cmake
+  include(CPack)
+  ```
+  
+  ​	在 `CMakeLists.txt` 的末尾添加 `include(CPack)`，在定义所有安装规则（`install()`）后调用 `include(CPack)`，以确保打包内容完整。在build目录下执行`cpack`即可开始打包，打包之前无需执行安装程序，只需完成配置和编译命令。
+
+> 值得注意的是，安装文件时设置全局可写权限（如`WORLD_WRITE`），可能触发CPack的安全检查机制，导致打包失败‌。
 
 
 
