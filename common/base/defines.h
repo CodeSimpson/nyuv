@@ -22,7 +22,7 @@
 #ifdef INSTALL
 #define LIBLIST "/usr/lib/nyuv/liblist.xml"
 #define LIBROOT "/usr/lib/nyuv/"
-#define CONFIG "/etc/nyuv/"
+#define CONFIG "/usr/etc/nyuv/"
 #else
 #define LIBLIST "../lib/liblist.xml"
 #define LIBROOT "../lib/"

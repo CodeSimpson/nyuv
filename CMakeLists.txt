@@ -95,7 +95,7 @@ file(GLOB GLOB_BIN ${EXECUTABLE_OUTPUT_PATH}/nyuv)      # 收集构建生成的�
 file(GLOB GLOB_LIB ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/*) # 收集构建生成的库文件，路径由 CMAKE_LIBRARY_OUTPUT_DIRECTORY 指定）
 INSTALL(FILES ${GLOB_BIN} DESTINATION bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE)    # 安装可执行文件到目录 /usr/bin
 INSTALL(FILES ${GLOB_LIB} DESTINATION lib/nyuv)                         # 安装库文件到 /usr/lib/nyuv
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/nyuv.desktop DESTINATION share/applications/) # 安装桌面启动文件
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/nyuv.desktop DESTINATION share/applications/ PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE) # 安装桌面启动文件
 INSTALL(FILES ${EXECUTABLE_OUTPUT_PATH}/.nyuv.config DESTINATION etc/nyuv/ PERMISSIONS OWNER_WRITE OWNER_READ) # 安装配置文件，使用绝对路径 /etc/nyuv/ 会报错
 
 include(CPack)
