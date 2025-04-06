@@ -400,3 +400,131 @@ QImageViewer::loadRawImg()
 
 
 
+* gui目录下的CMakeLists.txt
+
+  ```cmake
+  set(CMAKE_AUTOMOC ON)               # 启动自动元对象编译器MOC
+  set(CMAKE_AUTOUIC ON)               # 启动自动用户界面编译器UIC
+  set(CMAKE_AUTORCC ON)               # 启动自动资源编译器RCC
+  set(CMAKE_INCLUDE_CURRENT_DIR ON)   # 将当前构建目录和源代码路径加入头文件搜索路径
+  ```
+
+  以上代码用于简化Qt项目的构建配置，自动化处理Qt特有的元对象、界面和资源编译过程。
+
+  1. `set(CMAKE_AUTOMOC ON) `
+
+     ​	这句命令启动自动MOC（Meta-Object Compiler），作用是自动扫面头文件（如含有Q_OBJECT的类），生成`moc_*.cpp`文件以支持Qt信号槽机制，开发者无需手动运行moc命令。
+
+     **什么是MOC：**
+
+     MOC是Qt框架的预处理器，在Qt开发中，MOC（元对象编译器）是一个核心工具，它通过扩展C++语言特性，支撑了Qt特有的功能，他会扫描代码中带有`Q_OBJECT`宏的类头文件（如`*.h`），并生成对应的`moc_*.cpp`文件，这些生成的代码实现Qt的元对象系统，包括：
+
+     * 信号与槽：实现对象间通信
+     * 动态属性：运行运行时修改/添加属性
+     * 运行时类型信息RTTI：支持`qobject_cast`等动态类型转换
+
+     举个例子，在nyuv代码中，MOC会生成这6个文件。
+
+     ```c++
+     moc_mainwindow.cpp
+     moc_myFileTree.cpp
+     moc_myInfoBar.cpp
+     moc_myPrefer.cpp
+     moc_myQImageviewer.cpp
+     moc_update.cpp
+     ```
+
+     若禁用自动MOC，开发者需要手动处理MOC生成步骤，例如：
+
+     ```cmake
+     # 手动指定MOC处理的头文件
+     qt5_wrap_cpp(MOC_FILES MyWidget.h)
+     add_executable(MyApp main.cpp MyWidget.cpp ${MOC_FILES})
+     ```
+
+     **推荐始终启用AUTOMOC。**
+
+  2. `set(CMAKE_AUTOUIC ON)`
+
+     ​	这句命令启动自动UIC（User Interface Compiler），UIC是用于自动化处理Qt Designer创建的界面文件（.ui）的工具。输入是由Qt Designer生成的XML格式界面文件，例如`mydialog.ui`，描述了窗口、按钮布局等UI元素属性，输出文件为`ui_*.h`，例如`ui_mydialog.ui`，其中包好一个c++类，例如（`Ui::MyDialog`），封装了界面元素的创建和布局逻辑。
+
+     若禁用自动UIC，开发者需要手动处理UIC生成，例如：
+
+     ```cmake
+     # 手动指定需要处理的.ui文件
+     qt5_wrap_ui(UI_HEADERS mydialog.ui)
+     
+     # 将生成的ui_*.h文件添加到目标
+     add_executable(MyApp main.cpp MyDialog.cpp ${UI_HEADERS})
+     ```
+
+     ​	在nyuv中未使用
+
+  3. `set(CMAKE_AUTORCC ON) `
+
+     ​	这句命令启动Qt的自动RCC（Resource Compiler）功能，RCC是用于自动化处理Qt资源文件（`.qrc`）的工具。它允许开发者将图片、图标、翻译文件等静态资源**直接嵌入到可执行文件中**，避免运行时依赖外部路径的问题。nyuv中通过`icon.qrc`嵌入图标。`icon.qrc`是**资源文件**，是一个XML格式的文件，用于声明需要嵌入到程序中的资源路径，自动RCC会调用RCC工具将`.qrc`文件编译为c++代码，如`qrc_icon.cpp`，其中包含资源的二进制数据（图片会被转为二进制数据），自动链接，无需开发者手动管理。
+
+     若禁用自动RCC，开发者需要手动处理RCC生成，例如：
+
+     ```cmake
+     # 手动指定.qrc文件
+     qt5_add_resources(RCC_SOURCES resources.qrc)
+     
+     # 将生成的代码加入目标
+     add_executable(MyApp main.cpp ${RCC_SOURCES})
+     ```
+
+  4. `set(CMAKE_INCLUDE_CURRENT_DIR ON) `
+
+     这句代码的作用是**自动将每个源文件所在的目录添加到编译器的头文件搜索路径中**‌。若未显式设置此选项，CMake不会自动添加当前目录到包含路径，此时头文件引用需通过一下方式之一：
+
+     * 使用完整的相对路径
+
+       ```c++
+       #include "../src/MyClass.h"  // 假设源文件在 build/ 目录下编译
+       ```
+
+     * 手动添加包含路径：在CMake中显示指定目录
+
+       ```cmake
+       include_directories(${CMAKE_SOURCE_DIR}/src)  # 手动添加头文件目录
+       ```
+
+     在Qt项目中通常涉及**自动生成的代码**（如 `ui_*.h`, `moc_*.cpp`），这些文件默认生成在构建目录（如 `build/`）中。`CMAKE_INCLUDE_CURRENT_DIR ON` 对它们的处理至关重要：
+
+     * 由自动UIC生成的UI头文件
+
+       若由`ui_mydialog.ui`自动生成的`ui_*.h`位于构建目录如`build/`下，在代码 `MainWindow.cpp` 中需包含此头文件，若未启用 `CMAKE_INCLUDE_CURRENT_DIR`，需手动添加构建目录路径：
+
+       ```cmake
+       include_directories(${CMAKE_BINARY_DIR})  # 否则编译失败
+       ```
+
+     * **与自动MOC/UIC/RCC的协同**
+
+       自动MOC/UIC/RCC生成的代码通常位于构建目录的子文件夹（如 `build/gui/mywidgets/mywidgets_autogen/include/moc_*.cpp`和`build/gui/qrc_icon.cpp`）,`CMAKE_INCLUDE_CURRENT_DIR ON` 会确保这些路径被自动包含，避免手动配置。
+
+  * **查找Qt库**
+
+    ```cmake
+    find_package(Qt5 COMPONENTS Core Gui Widgets Network REQUIRED)  # 查找并验证项目所需的Qt5库及其组件‌
+    ```
+
+    该代码的作用为在系统中搜索安装的Qt5开发环境，并加载其CMake配置。
+
+    - ‌**依赖条件**‌：需确保Qt5已正确安装，且其路径已通过环境变量 `Qt5_DIR` 或在CMake中显式设置（如 `set(Qt5_DIR "/path/to/Qt5/lib/cmake/Qt5")`）。
+
+    - 在系统中搜索安装的Qt5开发环境，并加载其CMake配置。
+
+    `REQUIRED`表示严格模式，若任一组建未找到，CMake配置阶段会立即终止并报错，避免后续编译或链接出现错误。
+
+  * **处理Qt资源文件**
+
+    ```cmake
+    file(GLOB_RECURSE QRC_SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.qrc)   # 递归搜索当前目录下的.qrc文件，并保存它们的路径到 QRC_SOURCE_FILES 中
+    set(QRC_SOURCE_FILES icon.qrc)                                          # 将变量 QRC_SOURCE_FILES 的值覆盖为 icon.qrc
+    qt5_add_resources(QRC_FILES ${QRC_SOURCE_FILES})                        # 调用rcc工具生成c++代码，并将生成的文件路径保存到 QRC_FILES 
+    ```
+
+    上面第1句代码和第2句代码存在逻辑冲突，保存一句即可。`qt5_add_resources`生成的 `qrc_icon.cpp` 包含所有在 `icon.qrc` 中声明的资源（图片、样式表等）的二进制数据。
+
